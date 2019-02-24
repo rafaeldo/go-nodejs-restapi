@@ -2,7 +2,25 @@ const Ad = require('../models/Ad')
 
 class AdController {
   async index (req, res) {
-    const filters = {} // No filters yet
+    const filters = {}
+
+    // Filter >> Price
+    if (req.query.price_min || req.query.price_max) {
+      filters.price = {}
+
+      if (req.query.price_min) {
+        filters.price.$gte = req.query.price_min // Mongoose -> gte -> greater than
+      }
+
+      if (req.query.price_max) {
+        filters.price.$lte = req.query.price_max // Mongoose -> lte -> lower than
+      }
+    }
+
+    // FIlter >> Title
+    if (req.query.title) {
+      filters.title = new RegExp(req.query.title, 'i') // 'i' -> case insensitive
+    }
 
     const options = {
       page: req.query.page || 1,
