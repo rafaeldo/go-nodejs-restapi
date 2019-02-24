@@ -1,5 +1,5 @@
 const Ad = require('../models/Ad')
-// const User = require('../models/User')
+const User = require('../models/User')
 const Mail = require('../services/Mail')
 
 class PurchaseController {
@@ -7,13 +7,18 @@ class PurchaseController {
     const { ad, content } = req.body
 
     const purchaseAd = await Ad.findById(ad).populate('author')
-    // const user = await User.findById(req.userId)
+    const user = await User.findById(req.userId)
 
     await Mail.sendMail({
       from: '"Rafael de Oliveira" <rafaoliverdev@gmail.com>',
       to: purchaseAd.author.email,
       subject: `Solicitação de compra: ${purchaseAd.title}`,
-      html: `<p>Teste: ${content}</p>`
+      template: 'purchase',
+      context: {
+        user,
+        content,
+        ad: purchaseAd
+      }
     })
 
     return res.send()
